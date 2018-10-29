@@ -5,7 +5,7 @@ on_minikube: false
 image:
   fluent_bit:
     repository: fluent/fluent-bit
-    tag: 0.13.0
+    tag: 0.14.4
   pullPolicy: Always
 
 # When enabled, exposes json and prometheus metrics on {{ .Release.Name }}-metrics service
@@ -23,6 +23,10 @@ backend:
   forward:
     host: fluentd
     port: 24284
+    tls: "off"
+    tls_verify: "on"
+    tls_debug: 1
+    shared_key:
   es:
     host: elasticsearch
     port: 9200
@@ -30,6 +34,7 @@ backend:
     index: kubernetes_cluster
     type: flb_type
     logstash_prefix: kubernetes_cluster
+    time_key: "@timestamp"
     # Optional username credential for Elastic X-Pack access
     http_user:
     # Password for user defined in HTTP_User
@@ -39,8 +44,17 @@ backend:
     tls_verify: "on"
     # TLS certificate for the Elastic (in PEM format). Use if tls=on and tls_verify=on.
     tls_ca: ""
-    # TLS debugging levels = 1-5
+    # TLS debugging levels = 1-4
     tls_debug: 1
+  splunk:
+    host: 127.0.0.1
+    port: 8088
+    token: ""
+    send_raw: "on"
+    tls: "on"
+    tls_verify: "off"
+    tls_debug: 1
+    message_key: "kubernetes"
 
   ##
   ## Ref: http://fluentbit.io/documentation/current/output/http.html
@@ -49,11 +63,17 @@ backend:
     host: 127.0.0.1
     port: 80
     uri: "/"
+    http_user:
+    http_passwd:
+    tls: "off"
+    tls_verify: "on"
+    tls_debug: 1
     ## Specify the data format to be used in the HTTP request body
     ## Can be either 'msgpack' or 'json'
     format: msgpack
 
 parsers:
+  enabled: false
   ## List the respective parsers in key: value format per entry
   ## Regex required fields are name and regex. JSON required field
   ## is name.
@@ -70,6 +90,13 @@ podAnnotations: {}
 ## to NOT generate a ConfigMap resource
 ##
 existingConfigMap: ""
+
+## Add extra input sources
+extraInputs: |-
+## Add extra filters
+extraFilters: |-
+## Add extra outputs
+extraOutputs: |-
 
 ## Extra volumes containing additional files required for fluent-bit to work
 ## (eg. CA certificates)
