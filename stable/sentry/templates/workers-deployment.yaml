@@ -66,7 +66,7 @@ spec:
             {{- end }}
               key: postgres-password
         - name: SENTRY_POSTGRES_HOST
-          value: {{ template "postgresql.host" . }}
+          value: {{ .Values.postgresHost | quote }}
         - name: SENTRY_POSTGRES_PORT
           value: "5432"
         - name: SENTRY_REDIS_PASSWORD
