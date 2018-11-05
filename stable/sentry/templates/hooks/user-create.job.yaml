@@ -50,7 +50,7 @@ spec:
             {{- end }}
               key: postgres-password
         - name: SENTRY_POSTGRES_HOST
-          value: {{ .Values.postgresHost | quote }}
+          value: {{ .Values.postgresql.postgresHost | quote }}
         - name: SENTRY_POSTGRES_PORT
           value: "5432"
         - name: SENTRY_REDIS_PASSWORD
@@ -63,7 +63,7 @@ spec:
             {{- end }}
               key: redis-password
         - name: SENTRY_REDIS_HOST
-          value: {{ template "redis.fullname" . }}-master
+          value: {{ template "redis.fullname" . }}
         - name: SENTRY_REDIS_PORT
           value: "6379"
         - name: SENTRY_EMAIL_HOST
